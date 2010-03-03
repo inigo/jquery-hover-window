@@ -7,13 +7,16 @@
 		$('a').hoverWindow();
 	});
 
-	To specify an alternative way of calculating the URL to display:
+	Full options:
 	
-	$(document).ready(function() {
-		$('p').hoverWindow({ src : function(el) { return "http://localhost/lookup?"+el.attr("id"); } });
-	});
+		$('p').hoverWindow({
+			src : function(el) { return "http://localhost/lookup?"+el.attr("id"); } ,
+			log : function(message) { myLogger.debug(message); },
+			timeBeforeShow: 1000,
+			timeBeforeHide: 500
+		});
 	
-	This plugin requires JQuery 1.4+ (it was developed under JQuery 1.4.0).
+	This plugin requires JQuery 1.4+ (it was developed under JQuery 1.4.2).
 
 	Copyright (C) 2010, Inigo Surguy, 67 Bricks Ltd.
 	Released under the terms of the Lesser GNU Public License.
@@ -24,7 +27,9 @@
 	$.fn.hoverWindow = function(options) {  
 		var defaults = {  
 			src : function(element) { return element.attr("href"); },
-			log : function() { }
+			log : function() { },
+			timeBeforeShow: 1000,
+			timeBeforeHide: 500
 		};
 		var options = $.extend(defaults, options);
 		var log = options.log;
@@ -44,7 +49,7 @@
 		    coords.top = Math.floor(selectedItem.offset().top)+10+selectedItem.height();
 		    coords.left = Math.floor(selectedItem.offset().left)+50;
 		    log("Showing preview pane at "+coords.top+","+coords.left+" for "+href);
-		    // $("#hoverWindow_searchPreviewPane iframe").attr("src", href);    
+		    $("#hoverWindow_searchPreviewPane iframe").attr("src", href);    
 		    previewPane.offset(coords).fadeIn("fast");
 		};
 
@@ -68,7 +73,7 @@
 			} else {
 				log("Preview href has not changed - now "+href+" but was "+previewFrame.attr("src"));
 			}
-			setTimeout(function() { doPreview(selectedItem); }, 1000);
+			setTimeout(function() { doPreview(selectedItem); }, options.timeBeforeShow);
 		    }
 		};
 
@@ -86,7 +91,7 @@
 		var prepareToCancel = function() {
 		    if (!cancellingPreview) {
 			cancellingPreview = true;
-		    	setTimeout(cancelPreview, 1000);
+		    	setTimeout(cancelPreview, options.timeBeforeHide);
 		    }
 		}
 
